@@ -1,6 +1,5 @@
 <script>
 	import Header from './Header.svelte';
-	import NowPlaying from '$lib/components/NowPlaying.svelte';
 	import '../app.css';
 	import { theme } from '$lib/stores/theme';
 	import { onMount } from 'svelte';
@@ -16,7 +15,6 @@
 	<main>
 		<slot />
 	</main>
-	<NowPlaying />
 	<footer>
 		<div class="container">
 			<div class="social-links">

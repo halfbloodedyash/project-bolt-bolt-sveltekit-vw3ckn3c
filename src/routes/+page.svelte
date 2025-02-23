@@ -1,4 +1,7 @@
 <script>
+	import { fade, fly, scale } from 'svelte/transition';
+	import { spring } from 'svelte/motion';
+
 	const projects = [
 		{
 			title: 'AI-Powered Analytics',
@@ -36,9 +39,10 @@
 	];
 
 	function downloadResume() {
-		// Add your resume download logic here
 		console.log('Downloading resume...');
 	}
+
+	let visible = true;
 </script>
 
 <svelte:head>
@@ -55,41 +59,56 @@
 <main>
 	<section class="section hero">
 		<div class="container">
-			<div class="terminal">
-				<div class="terminal-header">
-					<span class="terminal-button red"></span>
-					<span class="terminal-button yellow"></span>
-					<span class="terminal-button green"></span>
-					<span class="terminal-title">bash ~/portfolio</span>
+			{#if visible}
+				<div class="terminal" transition:scale={{ duration: 400, start: 0.95 }}>
+					<div class="terminal-header">
+						<span class="terminal-button red"></span>
+						<span class="terminal-button yellow"></span>
+						<span class="terminal-button green"></span>
+						<span class="terminal-title">bash ~/portfolio</span>
+					</div>
+					<div class="terminal-content">
+						<p><span class="prompt">yash@portfolio</span> <span class="path">~</span> $ whoami</p>
+						<h1 in:fly={{ x: -20, duration: 400, delay: 300 }}>
+							Yash Kumar
+						</h1>
+						<p><span class="prompt">yash@portfolio</span> <span class="path">~</span> $ cat role.txt</p>
+						<p class="subtitle" in:fly={{ x: -20, duration: 400, delay: 500 }}>
+							Developer
+						</p>
+						<p><span class="prompt">yash@portfolio</span> <span class="path">~</span> $ cat about.txt</p>
+						<p class="bio" in:fly={{ x: -20, duration: 400, delay: 700 }}>
+							Passionate developer crafting digital solutions with modern technologies.
+							Specialized in cloud-native applications and distributed systems.
+						</p>
+						<p><span class="prompt">yash@portfolio</span> <span class="path">~</span> $ ./download-resume.sh</p>
+						<button 
+							class="terminal-btn" 
+							on:click={downloadResume}
+						>
+							📄 Download Resume
+						</button>
+						<p class="cursor-line">
+							<span class="prompt">yash@portfolio</span> <span class="path">~</span> $ <span class="cursor">█</span>
+						</p>
+					</div>
 				</div>
-				<div class="terminal-content">
-					<p><span class="prompt">yash@portfolio</span> <span class="path">~</span> $ whoami</p>
-					<h1>Yash Kumar</h1>
-					<p><span class="prompt">yash@portfolio</span> <span class="path">~</span> $ cat role.txt</p>
-					<p class="subtitle">Developer</p>
-					<p><span class="prompt">yash@portfolio</span> <span class="path">~</span> $ cat about.txt</p>
-					<p class="bio">
-						Passionate developer crafting digital solutions with modern technologies.
-						Specialized in cloud-native applications and distributed systems.
-					</p>
-					<p><span class="prompt">yash@portfolio</span> <span class="path">~</span> $ ./download-resume.sh</p>
-					<button class="terminal-btn" on:click={downloadResume}>
-						📄 Download Resume
-					</button>
-					<p class="cursor-line">
-						<span class="prompt">yash@portfolio</span> <span class="path">~</span> $ <span class="cursor">█</span>
-					</p>
-				</div>
-			</div>
+			{/if}
+			}
 		</div>
 	</section>
 
 	<section class="section">
 		<div class="container">
-			<h2>&lt;Projects /&gt;</h2>
+			<h2 in:fly={{ y: 20, duration: 400 }}>
+				&lt;Projects /&gt;
+			</h2>
 			<div class="grid">
-				{#each projects as project}
-					<div class="card">
+				{#each projects as project, i}
+					<div 
+						class="card"
+						in:fly={{ y: 20, duration: 400, delay: i * 200 }}
+					>
 						<h3>{project.title}</h3>
 						<p>{project.description}</p>
 						<div class="tech-stack">
@@ -98,7 +117,12 @@
 							{/each}
 							}
 						</div>
-						<a href={project.link}>View Project <span class="arrow">→</span></a>
+						<a 
+							href={project.link}
+							class="project-link"
+						>
+							View Project <span class="arrow">→</span>
+						</a>
 					</div>
 				{/each}
 				}
@@ -108,14 +132,24 @@
 
 	<section class="section" style="background: var(--color-secondary)">
 		<div class="container">
-			<h2>&lt;Skills /&gt;</h2>
+			<h2 in:fly={{ y: 20, duration: 400 }}>
+				&lt;Skills /&gt;
+			</h2>
 			<div class="grid">
-				{#each skills as category}
-					<div class="card">
+				{#each skills as category, i}
+					<div 
+						class="card"
+						in:fly={{ y: 20, duration: 400, delay: i * 200 }}
+					>
 						<h3>{category.title}</h3>
 						<div class="skills-list">
 							{#each category.items as skill}
-								<span class="skill-tag">{skill}</span>
+								<span 
+									class="skill-tag"
+									in:scale={{ duration: 200 }}
+								>
+									{skill}
+								</span>
 							{/each}
 							}
 						</div>
@@ -141,10 +175,10 @@
 	}
 
 	.emoji-grid {
-		font-size: 4rem;
+		font-size: clamp(2rem, 4vw, 4rem);
 		line-height: 1.5;
 		display: grid;
-		grid-template-columns: repeat(6, 1fr);
+		grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 		gap: 2rem;
 		animation: float 20s linear infinite;
 		white-space: nowrap;
@@ -160,7 +194,7 @@
 	}
 
 	.hero {
-		padding: 6rem 0;
+		padding: clamp(3rem, 10vh, 6rem) 0;
 	}
 
 	.terminal {
@@ -200,7 +234,7 @@
 	}
 
 	.terminal-content {
-		padding: 2rem;
+		padding: clamp(1rem, 4vw, 2rem);
 		font-family: var(--font-mono);
 	}
 
@@ -239,6 +273,11 @@
 		background: var(--color-primary);
 		color: white;
 		border-color: var(--color-primary);
+		transform: scale(1.05);
+	}
+
+	.terminal-btn:active {
+		transform: scale(0.95);
 	}
 
 	@keyframes blink {
@@ -246,13 +285,13 @@
 	}
 
 	h1 {
-		font-size: 3rem;
+		font-size: clamp(2rem, 5vw, 3rem);
 		margin: 0.5rem 0 1rem 0;
 		color: var(--color-primary);
 	}
 
 	.subtitle {
-		font-size: 1.5rem;
+		font-size: clamp(1.2rem, 3vw, 1.5rem);
 		color: var(--color-accent);
 		margin: 0.5rem 0;
 	}
@@ -260,17 +299,26 @@
 	.bio {
 		max-width: 600px;
 		margin: 1.5rem 0;
-		font-size: 1.1rem;
+		font-size: clamp(1rem, 2vw, 1.1rem);
 	}
 
 	h2 {
-		font-size: 2rem;
+		font-size: clamp(1.5rem, 4vw, 2rem);
 		margin-bottom: 2rem;
 		color: var(--color-primary);
+		text-align: center;
 	}
 
 	h3 {
 		margin: 0 0 1rem 0;
+		font-size: clamp(1.2rem, 3vw, 1.5rem);
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+		gap: clamp(1rem, 3vw, 2rem);
+		width: 100%;
 	}
 
 	.tech-stack, .skills-list {
@@ -285,16 +333,52 @@
 		color: var(--color-primary);
 		padding: 0.25rem 0.75rem;
 		border-radius: 16px;
-		font-size: 0.9rem;
+		font-size: clamp(0.8rem, 2vw, 0.9rem);
 		font-family: var(--font-mono);
-	}
-
-	.arrow {
-		display: inline-block;
 		transition: transform 0.2s ease;
 	}
 
-	a:hover .arrow {
-		transform: translateX(4px);
+	.tech-tag:hover, .skill-tag:hover {
+		transform: scale(1.1);
+	}
+
+	.project-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 1rem;
+	}
+
+	.arrow {
+		transition: transform 0.2s ease;
+	}
+
+	.project-link:hover .arrow {
+		transform: translateX(5px);
+	}
+
+	@media (max-width: 768px) {
+		.container {
+			padding: 0 1rem;
+		}
+
+		.terminal {
+			margin: 0 1rem;
+		}
+
+		.grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.tech-stack, .skills-list {
+			gap: 0.25rem;
+		}
+
+		.tech-tag, .skill-tag {
+			padding: 0.2rem 0.5rem;
+			font-size: 0.8rem;
+		}
 	}
 </style>

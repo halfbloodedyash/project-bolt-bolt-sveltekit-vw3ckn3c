@@ -1,6 +1,8 @@
 <script>
 	import { page } from '$app/stores';
 	import { theme } from '$lib/stores/theme';
+	import { fly, scale } from 'svelte/transition';
+	import { spring } from 'svelte/motion';
 
 	function toggleTheme() {
 		theme.update(current => current === 'light' ? 'dark' : 'light');
@@ -13,7 +15,7 @@
 	];
 </script>
 
-<header>
+<header in:fly={{ y: -100, duration: 400 }}>
 	<div class="container">
 		<nav>
 			<div class="logo">
@@ -34,7 +36,11 @@
 				{/each}
 				}
 			</div>
-			<button class="theme-toggle" on:click={toggleTheme}>
+			<button
+				class="theme-toggle"
+				on:click={toggleTheme}
+				in:scale
+			>
 				{#if $theme === 'light'}
 					<span>🌙</span>
 				{:else}
@@ -66,9 +72,14 @@
 	}
 
 	.logo {
-		font-size: 1.5rem;
+		font-size: clamp(1.2rem, 3vw, 1.5rem);
 		font-weight: bold;
 		flex-shrink: 0;
+		transition: transform 0.2s ease;
+	}
+
+	.logo:hover {
+		transform: scale(1.1);
 	}
 
 	.tabs-container {
@@ -78,6 +89,13 @@
 		flex: 1;
 		max-width: 600px;
 		margin: 0 auto;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+	}
+
+	.tabs-container::-webkit-scrollbar {
+		display: none;
 	}
 
 	.tab {
@@ -87,12 +105,17 @@
 		color: var(--color-text);
 		text-decoration: none;
 		font-family: var(--font-mono);
-		font-size: 0.9rem;
+		font-size: clamp(0.8rem, 2vw, 0.9rem);
 		display: flex;
 		align-items: center;
 		border-radius: 8px 8px 0 0;
 		overflow: hidden;
-		transition: color 0.2s ease;
+		transition: all 0.2s ease;
+		white-space: nowrap;
+	}
+
+	.tab:hover {
+		transform: translateY(-2px);
 	}
 
 	.tab-background {
@@ -133,12 +156,18 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-family: var(--font-mono);
-		font-size: 0.9rem;
+		font-size: clamp(0.8rem, 2vw, 0.9rem);
 		flex-shrink: 0;
+		transition: all 0.2s ease;
 	}
 
 	.theme-toggle:hover {
 		color: var(--color-primary);
+		transform: scale(1.1);
+	}
+
+	.theme-toggle:active {
+		transform: scale(0.9);
 	}
 
 	.mode-text {
@@ -148,6 +177,16 @@
 	@media (min-width: 768px) {
 		.mode-text {
 			display: inline;
+		}
+	}
+
+	@media (max-width: 480px) {
+		nav {
+			gap: 1rem;
+		}
+
+		.tab {
+			padding: 0 15px;
 		}
 	}
 </style>
